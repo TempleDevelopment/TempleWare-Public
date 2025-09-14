@@ -20,7 +20,7 @@ void apply_walls(C_AggregateSceneObject* object, ImVec4 colors) {
 		object->m_pData[i].b = static_cast<uint8_t>(colors.z * 255.0f);
 	}
 }
-
+/*
 void* __fastcall H::hkUpdateSceneObject(C_AggregateSceneObject* object, void* unk)
 {
 	static auto update_walls_object = UpdateWallsObject.GetOriginal();
@@ -38,3 +38,4 @@ void* __fastcall H::hkUpdateSceneObject(C_AggregateSceneObject* object, void* un
 
 	return result;
 }
+*/
