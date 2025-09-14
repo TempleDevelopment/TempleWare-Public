@@ -18,7 +18,7 @@
 #include "../interfaces/interfaces.h"
 #include "../features/aim/aim.h"
 
-/*
+
 void* __fastcall H::hkUpdateSkybox(c_env_sky* sky) {
     static auto org = UpdateSkybox.GetOriginal();
     
@@ -46,7 +46,7 @@ void* __fastcall H::hkUpdateSkybox(c_env_sky* sky) {
 
     return org(sky);
 }
-*/
+
 
 void* __fastcall H::hkDrawLegs(void* a1, void* a2, void* a3, void* a4, void* a5) {
     if (Config::removelegs) return nullptr;
@@ -102,7 +102,7 @@ void* __fastcall H::hkLevelInit(void* pClientModeShared, const char* szNewMap) {
 void H::Hooks::init() {
     oGetWeaponData = *reinterpret_cast<int*>(M::patternScan("client", ("48 8B 81 ? ? ? ? 85 D2 78 ? 48 83 FA ? 73 ? F3 0F 10 84 90 ? ? ? ? C3 F3 0F 10 80 ? ? ? ? C3 CC CC CC CC")) + 0x3);
     ogGetBaseEntity = reinterpret_cast<decltype(ogGetBaseEntity)>(M::patternScan("client", ("4C 8D 49 10 81 FA FE 7F 00 00 ? ? 8B CA C1 F9 09 83 F9 3F ? ? 48 63 C1 4D")));
-    oGetLocalPlayer = reinterpret_cast<decltype(oGetLocalPlayer)>(M::getAbsoluteAddress(M::patternScan("client", "e8 ? ? ? ? 48 8b f8 48 85 c0 0f 84 ? ? ? ? 48 8b 10 48 8b c8 ff 92 ? ? ? ? 84 c0 0f 84 ? ? ? ? 48 8b 17 48 8b cf ff 92 ? ? ? ? 84 c0 0f 84 ? ? ? ? 48 8b 07"),1)); // ya zaebalsya obnovlyat' eto govno
+    oGetLocalPlayer = reinterpret_cast<decltype(oGetLocalPlayer)>(M::getAbsoluteAddress(M::patternScan("client", "e8 ? ? ? ? 48 8b f8 48 85 c0 0f 84 ? ? ? ? 48 8b 10 48 8b c8 ff 92 ? ? ? ? 84 c0 0f 84 ? ? ? ? 48 8b 17 48 8b cf ff 92 ? ? ? ? 84 c0 0f 84 ? ? ? ? 48 8b 07"),1));
     
     // UpdateWallsObject.Add((void*)M::patternScan("scenesystem", ("48 89 5C 24 10 48 89 6C 24 18 56 57 41 54 41 56 41 57 48 83 EC 40")), &hkUpdateSceneObject);
     FrameStageNotify.Add((void*)M::patternScan("client", ("48 89 5c 24 ? 57 48 83 ec ? 39 15")), &hkFrameStageNotify); 
@@ -117,7 +117,7 @@ void H::Hooks::init() {
     LightingModulate.Add((void*)M::patternScan("scenesystem", ("48 89 5C 24 18 48 89 6C 24 20 48 89 54 24 10 57 48 83 EC 50 48 8B DA 48 8B F9 BA FF FF FF FF 48")), &hkLightingModulate);
     MouseInputEnabled.Add((void*)M::patternScan("client", ("40 53 48 83 EC 20 80 B9 ? ? ? ? ? 48 8B D9 75 78")), &hkMouseInputEnabled);
     IsRelativeMouseMode.Add((void*)M::getvfunc(I::InputSys, 76U), &hkIsRelativeMouseMode);
-    // UpdateSkybox.Add((void*)M::patternScan("client", ("48 8B C4 48 89 58 18 48 89 70 20 55 57 41 54 41 55")), &hkUpdateSkybox);
+    UpdateSkybox.Add((void*)M::patternScan("client", ("48 89 5c 24 ? 48 89 74 24 ? 48 89 7c 24 ? 55 41 54 41 55 41 56 41 57 48 8b ec 48 83 ec ? 48 83 b9")), &hkUpdateSkybox);
 
     MH_EnableHook(MH_ALL_HOOKS);
 }   
