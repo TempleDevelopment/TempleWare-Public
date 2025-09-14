@@ -67,19 +67,19 @@ void __fastcall H::hkFrameStageNotify(void* a1, int stage)
 
         switch (stage) {
 
-        case 1:
-            FakeSpamm();
-            break;
-        
-
-        case 2:
+        case 3:
             Triggerbot();
             Aimbot();
             break;
         
 
-        case 8:
+        case 4:
             Esp::cache();
+            break;
+        
+
+        case 6:
+            FakeSpamm();
             break;
         
 
