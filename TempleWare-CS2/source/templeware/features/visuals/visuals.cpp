@@ -124,7 +124,7 @@ void Esp::cache()
                     continue;
 
                 health = Player->m_iHealth();
-                name = Controller->m_sSanitizedPlayerName();
+                name = Controller->getName();
                 position = Player->m_vOldOrigin(); viewOffset = Player->m_vecViewOffset();
                 /*
                 C_CSWeaponBase* active_weapon = Player->GetActiveWeapon();
