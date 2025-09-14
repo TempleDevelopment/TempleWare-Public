@@ -14,7 +14,6 @@ public:
 
 	SCHEMA_ADD_OFFSET(bool, IsLocalPlayer, 0x778);
 	SCHEMA_ADD_OFFSET(CBaseHandle, m_hPawn, 0x8FC);
-	SCHEMA_ADD_OFFSET(const char*, m_sSanitizedPlayerName, 0x850);
 
 private:
 	uintptr_t address;
