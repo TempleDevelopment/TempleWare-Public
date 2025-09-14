@@ -26,7 +26,7 @@ namespace H {
 	inline float g_flActiveFov;
 	float hkGetRenderFov(void* rcx);
 	void __fastcall hkLightingModulate(void* pLightBinnerGPU, CSceneLightObject* pSceneLightObject, void* a3);
-	// void* __fastcall hkUpdateSkybox(c_env_sky* sky);
+	void* __fastcall hkUpdateSkybox(c_env_sky* sky);
 
 
 	inline CInlineHookObj<decltype(&hkChamsObject)> DrawArray = { };
@@ -42,7 +42,7 @@ namespace H {
 	inline CInlineHookObj<decltype(&hkLightingModulate)> LightingModulate = { };
 	inline CInlineHookObj<decltype(&hkMouseInputEnabled)> MouseInputEnabled = { };
 	inline CInlineHookObj<decltype(&hkIsRelativeMouseMode)> IsRelativeMouseMode = {};
-	// inline CInlineHookObj<decltype(&hkUpdateSkybox)> UpdateSkybox = {};
+	inline CInlineHookObj<decltype(&hkUpdateSkybox)> UpdateSkybox = {};
 
 
 	// inline hooks
