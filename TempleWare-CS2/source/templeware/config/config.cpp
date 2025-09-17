@@ -13,6 +13,18 @@ namespace Config {
 	bool espFill = false;
 	bool showNameTags = false;
 
+	bool viewmodell = false;
+	float viewx, viewy, viewz;
+	float ifov = 100.f;
+
+	bool light = false;
+	ImVec4 DrawLight = ImVec4(1, 0, 0, 1);
+
+	bool fog = false;
+
+	bool skybox = false;
+	ImVec4 skyboxcolor = ImVec4(0, 0, 0, 1);
+
 	bool Night = false;
 
 	bool enemyChamsInvisible = false;
@@ -21,6 +33,8 @@ namespace Config {
 	bool teamChamsInvisible = false;
 	int chamsMaterial = 0;
 
+	bool spammer = false;
+	int spammingcho = 0;
 
 	bool armChams = false;
 	bool viewmodelChams = false;
@@ -40,13 +54,19 @@ namespace Config {
 	float fov = 90.0f;
 
 	bool antiflash = false;
+	bool SmokeRemove = false;
+	bool ScopeRemove = false;
 
 	ImVec4 NightColor = ImVec4(0.1, 0.1, 0.1, 1);
 
+	bool rainbow = false;
+
 	bool aimbot = 0;
+	bool offsetaim = 0;
 	float aimbot_fov = 0;
-	bool team_check = false;
 	bool rcs = 0;
 	bool fov_circle = 0;
 	ImVec4 fovCircleColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+	bool triggerBot = false;
+	bool removelegs = false;
 }

@@ -3,6 +3,7 @@
 #include "includes.h"
 #include "templeware/templeware.h"
 #include "templeware/renderer/icons.h"
+#include "templeware/menu/menu.h"
 
 #include "../external/kiero/minhook/include/MinHook.h"
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -20,6 +21,28 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
     if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam)) {
         return true;
+    }
+
+    if (Menu::IsMenuOpen()) {
+        switch (uMsg) {
+        case WM_MOUSEMOVE:
+        case WM_LBUTTONDOWN:
+        case WM_LBUTTONUP:
+        case WM_RBUTTONDOWN:
+        case WM_RBUTTONUP:
+        case WM_MBUTTONDOWN:
+        case WM_MBUTTONUP:
+        case WM_MOUSEWHEEL:
+        case WM_MOUSEHWHEEL:
+        case WM_XBUTTONDOWN:
+        case WM_XBUTTONUP:
+        case WM_KEYDOWN:
+        case WM_KEYUP:
+        case WM_SYSKEYDOWN:
+        case WM_SYSKEYUP:
+        case WM_CHAR:
+            return 0;
+        }
     }
 
     return CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
@@ -66,7 +89,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    if (GetAsyncKeyState(VK_END) & 1) {
+    if (GetAsyncKeyState(VK_INSERT) & 1) {
         templeWare.renderer.menu.toggleMenu();
     }
 
@@ -75,6 +98,7 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 
     // Always call esp() to allow individual components to be rendered
     templeWare.renderer.visuals.esp();
+    templeWare.renderer.hud.DrawCustomScope();
 
     ImGui::Render();
     pContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);

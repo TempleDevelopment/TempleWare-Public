@@ -31,7 +31,7 @@
 
 3. **Play CS2:**
    - Launch `Counter-Strike 2` and start using TempleWare.
-   - Menu Bind `END`
+   - Menu Bind `INSERT`
 
 ---
 

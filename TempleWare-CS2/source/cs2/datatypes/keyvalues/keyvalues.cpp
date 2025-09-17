@@ -21,20 +21,16 @@ void CKeyValues3::LoadFromBuffer(const char* szString)
 
 bool CKeyValues3::LoadKV3(CUtlBuffer* buffer)
 {
-	using fnLoadKeyValues = bool(__fastcall*)(CKeyValues3*, void*, CUtlBuffer*, KV3ID_t*, void*, void*, void*, void*, const char*);
-	static const fnLoadKeyValues oLoadKeyValues = reinterpret_cast<fnLoadKeyValues>(M::abs(M::FindPattern("tier0.dll", "E8 ? ? ? ? EB 36 8B 43 10"), 0x1, 0x0));
-
-	const char* szName = ("");
-	KV3ID_t kv3ID = KV3ID_t(("generic"), 0x41B818518343427E, 0xB5F447C23C0CDF8C);
-	return oLoadKeyValues(this, nullptr, buffer, &kv3ID, nullptr, nullptr, nullptr, nullptr, (""));
+	KV3ID_t kv3ID = KV3ID_t("generic", 0x41B818518343427E, 0xB5F447C23C0CDF8C);
+	return I::LoadKeyValues(this, nullptr, buffer, &kv3ID, nullptr);
 }
 
 CKeyValues3* CKeyValues3::create_material_from_resource()
 {
 	using fnSetTypeKV3 = CKeyValues3 * (__fastcall*)(CKeyValues3*, unsigned int, unsigned int);
-	static const fnSetTypeKV3 oSetTypeKV3 = reinterpret_cast<fnSetTypeKV3>(M::FindPattern("tier0.dll", ("40 53 48 83 EC 30 48 8B D9 49")));
+	static const fnSetTypeKV3 oSetTypeKV3 = reinterpret_cast<fnSetTypeKV3>(M::patternScan("tier0", ("40 53 48 83 EC ? 4C 8B 11 41 B9")));
 
+    CKeyValues3* pKeyValue = new CKeyValues3[0x10];
 
-	CKeyValues3* pKeyValue = new CKeyValues3[0x10];
-	return oSetTypeKV3(pKeyValue, 1U, 6U);
+    return oSetTypeKV3(pKeyValue, 1U, 6U);
 }

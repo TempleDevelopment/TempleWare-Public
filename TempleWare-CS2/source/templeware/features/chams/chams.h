@@ -38,5 +38,5 @@ namespace chams
 
 	static ChamsEntity GetTargetType(C_BaseEntity* entity) noexcept;
 	CStrongHandle<CMaterial2> create(const char* name, const char szVmatBuffer[]);
-	void __fastcall hook(void* pAnimatableSceneObjectDesc, void* pDx11, CMeshData* arrMeshDraw, int nDataCount, void* pSceneView, void* pSceneLayer, void* pUnk, void* pUnk2);
+	void __fastcall hook(void* pAnimatableSceneObjectDesc, void* pDx11, CMeshData* arrMeshDraw, int nDataCount, void* pSceneView, void* pSceneLayer, void* pUnk);
 }

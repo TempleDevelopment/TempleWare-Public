@@ -1,4 +1,4 @@
-#include "hud.h"
+﻿#include "hud.h"
 #include "../../../external/imgui/imgui.h"
 #include "../config/config.h"
 #include "../hooks/hooks.h"
@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <DirectXMath.h>
+#include "../../../external/imgui/imgui_internal.h"
 
 Hud::Hud() {
 
@@ -28,22 +29,59 @@ void RenderFovCircle(ImDrawList* drawList, float fov, ImVec2 screenCenter, float
     drawList->AddCircle(screenCenter, radius, color, 100, thickness);
 }
 
-void Hud::render() {
+void Hud::DrawCustomScope() {
+    ImGuiIO& io = ImGui::GetIO();
+    if (Config::ScopeRemove) {
 
+        C_CSPlayerPawn* lp = H::oGetLocalPlayer(0);
+
+        if (!lp || lp->getHealth() <= 0)
+            return;
+
+        if (Config::ScopeRemove && lp->getInScoped()) {
+            ImDrawList* drawList = ImGui::GetBackgroundDrawList();
+            ImVec2 screenCenter(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
+
+            drawList->AddLine(
+                ImVec2(0, screenCenter.y),
+                ImVec2(io.DisplaySize.x, screenCenter.y),
+                ImColor(0, 0, 0, 255),
+                1.f
+            );
+
+            drawList->AddLine(
+                ImVec2(screenCenter.x, 0),
+                ImVec2(screenCenter.x, io.DisplaySize.y),
+                ImColor(0, 0, 0, 255),
+                1.f
+            );
+        }
+    }
+}
+
+static ImFont* g_MediumFont = nullptr;
+void Hud::InitializeFonts() {
+    ImGuiIO& io = ImGui::GetIO();
+
+    g_MediumFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\Arial.ttf", 24.0f);
+    io.Fonts->Build();
+}
+
+void Hud::render() {
     // Time
     std::time_t now = std::time(nullptr);
     std::tm localTime;
     localtime_s(&localTime, &now);
     char timeBuffer[9];
     std::strftime(timeBuffer, sizeof(timeBuffer), "%H:%M:%S", &localTime);
-
+    
     // FPS
     float fps = ImGui::GetIO().Framerate;
     std::ostringstream fpsStream;
     fpsStream << static_cast<int>(fps) << " FPS";
 
     // WaterMark
-    std::string watermarkText = "TempleWare | " + fpsStream.str() + " | " + timeBuffer;
+    std::string watermarkText = "Templeware | " + fpsStream.str() + " | " + timeBuffer;
 
     ImVec2 textSize = ImGui::CalcTextSize(watermarkText.c_str());
     float padding = 5.0f;
@@ -67,7 +105,27 @@ void Hud::render() {
 
     if (Config::fov_circle) {
         ImVec2 Center = ImVec2(ImGui::GetIO().DisplaySize.x / 2.f, ImGui::GetIO().DisplaySize.y / 2.f);
-
         RenderFovCircle(drawList, Config::aimbot_fov, Center, ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y, 1.f);
+    }
+
+    ImVec2 screenSize = ImGui::GetIO().DisplaySize;
+    ImVec2 bindListPos = ImVec2(screenSize.x * 0.01f, screenSize.y * 0.5f);
+    float verticalSpacing = 30.0f;
+
+    if (g_MediumFont) {
+        ImGui::PushFont(g_MediumFont);
+        drawList->AddText(
+            bindListPos,
+            Config::aimbot ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255),
+            "AIMBOT"
+        );
+
+        drawList->AddText(
+            ImVec2(bindListPos.x, bindListPos.y + verticalSpacing),
+            Config::triggerBot ? IM_COL32(0, 255, 0, 255) : IM_COL32(255, 0, 0, 255),
+            "TRIGGER"
+        );
+
+        ImGui::PopFont();
     }
 }

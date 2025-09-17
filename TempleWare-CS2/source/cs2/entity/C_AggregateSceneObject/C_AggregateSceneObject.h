@@ -30,3 +30,9 @@ private:
 public:
 	C_AggregateSceneObjectData* m_pData; 
 };
+
+class CSceneLightObject {
+public:
+	char pad_0000[0xE4]; // 0x0
+	float r, g, b; // 0xE4
+};

@@ -3,5 +3,5 @@
 CCSWeaponBaseVData* C_CSWeaponBase::Data()
 {
 	// return pointer to weapon data
-	return *reinterpret_cast<CCSWeaponBaseVData**>((uintptr_t)this + H::oGetWeaponData);
+	return *reinterpret_cast<CCSWeaponBaseVData**>((uintptr_t)this + H::oGetWeaponData); // 0x360
 }

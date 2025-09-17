@@ -6,30 +6,40 @@
 
 #include <chrono>
 #include <Windows.h>
-
-// Literally the most autistic code ive ever written in my life
-// Please dont ever make me do this again
+#include <limits>
+#include <pplwin.h>
+#include <random>
 
 Vector_t GetEntityEyePos(const C_CSPlayerPawn* Entity) {
     if (!Entity)
         return {};
 
-    uintptr_t game_scene_node = *reinterpret_cast<uintptr_t*>((uintptr_t)Entity + SchemaFinder::Get(hash_32_fnv1a_const("C_BaseEntity->m_pGameSceneNode")));
+    uintptr_t game_scene_node = *reinterpret_cast<uintptr_t*>((uintptr_t)Entity +
+        SchemaFinder::Get(HASH("C_BaseEntity->m_pGameSceneNode")));
 
-    auto Origin = *reinterpret_cast<Vector_t*>(game_scene_node + SchemaFinder::Get(hash_32_fnv1a_const("CGameSceneNode->m_vecAbsOrigin")));
-    auto ViewOffset = *reinterpret_cast<Vector_t*>((uintptr_t)Entity + SchemaFinder::Get(hash_32_fnv1a_const("C_BaseModelEntity->m_vecViewOffset")));
+    auto Origin = *reinterpret_cast<Vector_t*>(game_scene_node +
+        SchemaFinder::Get(HASH("CGameSceneNode->m_vecAbsOrigin")));
+    auto ViewOffset = *reinterpret_cast<Vector_t*>((uintptr_t)Entity +
+        SchemaFinder::Get(HASH("C_BaseModelEntity->m_vecViewOffset")));
 
-    Vector_t Result = Origin + ViewOffset;
-    if (!std::isfinite(Result.x) || !std::isfinite(Result.y) || !std::isfinite(Result.z))
+    uintptr_t model = *reinterpret_cast<uintptr_t*>(game_scene_node +
+        SchemaFinder::Get(HASH("CSkeletonInstance->m_modelState")) + 0x80);
+
+    auto head = *reinterpret_cast<Vector_t*>(model + static_cast<unsigned long long>(6) * 32);
+
+    Vector_t result;
+    result = head;
+    if (Config::offsetaim)
+        result = Origin + ViewOffset;
+
+    if (!std::isfinite(result.x) || !std::isfinite(result.y) || !std::isfinite(result.z))
         return {};
 
-    return Result;
+    return result;
 }
 
-inline QAngle_t CalcAngles(Vector_t viewPos, Vector_t aimPos)
-{
+inline QAngle_t CalcAngles(Vector_t viewPos, Vector_t aimPos) {
     QAngle_t angle = { 0, 0, 0 };
-
     Vector_t delta = aimPos - viewPos;
 
     angle.x = -asin(delta.z / delta.Length()) * (180.0f / 3.141592654f);
@@ -38,70 +48,162 @@ inline QAngle_t CalcAngles(Vector_t viewPos, Vector_t aimPos)
     return angle;
 }
 
-inline float GetFov(const QAngle_t& viewAngle, const QAngle_t& aimAngle)
-{
+inline float GetFov(const QAngle_t& viewAngle, const QAngle_t& aimAngle) {
     QAngle_t delta = (aimAngle - viewAngle).Normalize();
-
     return sqrtf(powf(delta.x, 2.0f) + powf(delta.y, 2.0f));
 }
+
+
+void Triggerbot() {
+    if (!Config::triggerBot) return;
+
+    C_CSPlayerPawn* local = H::oGetLocalPlayer(0);
+    if (!local || local->getHealth() <= 0) return;
+
+    static uintptr_t dwForceAttack = modules.getModule("client") + 0x18518E0;
+    static bool needRelease = false;
+
+    const int targetIdx = local->getIDEntIndex();
+    bool shouldAttack = false;
+
+    if (targetIdx != -1) {
+
+        if (auto target = I::GameEntity->Instance->Get(targetIdx)) {
+
+            if (target->handle().valid()) {
+
+                SchemaClassInfoData_t* ci = nullptr;
+                target->dump_class_info(&ci);
+
+                if (ci && HASH(ci->szName) == HASH("C_CSPlayerPawn")) {
+
+                    auto pawn = reinterpret_cast<C_CSPlayerPawn*>(target);
+
+                    if (pawn->getTeam() != local->getTeam() && pawn->getHealth() > 0) {
+                        shouldAttack = true;
+                    }
+                }
+            }
+        }
+    }
+    if (shouldAttack) {
+        *reinterpret_cast<int*>(dwForceAttack) = 65537; // +attack
+        needRelease = true;
+    }
+
+    else if (needRelease) {
+        *reinterpret_cast<int*>(dwForceAttack) = 256; // -attack
+        needRelease = false;
+    }
+}
+
+void FakeSpamm() {
+    if (!Config::spammer)
+        return;
+
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+
+    switch (Config::spammingcho) {
+        case 0: // SharkHack
+        {
+            const char* messages[] = {
+                "Download SharkHack cheat right now!",
+                "You just got owned by SharkHack cheat",
+                "I'm dominating with SharkHack cheat xD",
+                "Get SharkHack and wreck everyone!"
+            };
+            std::uniform_int_distribution<>dist(0, IM_ARRAYSIZE(messages) - 1);
+            I::EngineClient->send_cmd(std::format("say {}", messages[dist(gen)]).c_str());
+            break;
+        }
+        case 1: // AimWare
+        {
+            const char* messages[] = {
+                "www.AIMWARE.net | Premium CS2 Cheat",
+                "Get rekt by $me using Aimware.net",
+                "Aimware.net is the superior solution.",
+                "Aimware.net, your next premium cheat."
+            };
+            std::uniform_int_distribution<>dist(0, IM_ARRAYSIZE(messages) - 1);
+            I::EngineClient->send_cmd(std::format("say {}", messages[dist(gen)]).c_str());
+            break;
+        }
+        case 2: // Luno
+        {
+            const char* messages[] = {
+                "Luno - new era in cs2",
+                "Get Luno right now",
+                "You seriously paying for cheats every month XD!?!?",
+                "i - snoop, you - dog"
+            };
+            std::uniform_int_distribution<>dist(0, IM_ARRAYSIZE(messages) - 1);
+            I::EngineClient->send_cmd(std::format("say {}", messages[dist(gen)]).c_str());
+            break;
+        }
+    }
+}
+
 
 void Aimbot() {
     if (!Config::aimbot)
         return;
 
-    int nMaxHighestEntity = I::GameEntity->Instance->GetHighestEntityIndex();
+    C_CSPlayerPawn* localPlayer = H::oGetLocalPlayer(0);
+    if (!localPlayer || localPlayer->m_iHealth() <= 0)
+        return;
 
-    C_CSPlayerPawn* lp = H::oGetLocalPlayer(0);
-    Vector_t lep = GetEntityEyePos(lp);
+    static QAngle_t oldpunch = { 0.f, 0.f, 0.f };
 
-    QAngle_t* viewangles = (QAngle_t*)(modules.getModule("client") + 0x1A75620); // If aimbot stops working, then you should update this offset
+    Vector_t localEyePos = GetEntityEyePos(localPlayer);
+    QAngle_t* viewAngles = (QAngle_t*)(modules.getModule("client") + 0x1A78650);
 
-    for (int i = 1; i <= nMaxHighestEntity; i++) {
-        auto Entity = I::GameEntity->Instance->Get(i);
-        if (!Entity)
+    float bestFov = Config::aimbot_fov;
+    C_CSPlayerPawn* bestTarget = nullptr;
+    QAngle_t bestAngle = { 0, 0, 0 };
+
+    for (int i = 1; i <= I::GameEntity->Instance->GetHighestEntityIndex(); i++) {
+        auto entity = I::GameEntity->Instance->Get(i);
+        if (!entity || !entity->handle().valid())
             continue;
 
-        if (!Entity->handle().valid())
+        SchemaClassInfoData_t* classInfo = nullptr;
+        entity->dump_class_info(&classInfo);
+        if (!classInfo || HASH(classInfo->szName) != HASH("C_CSPlayerPawn"))
             continue;
 
-        SchemaClassInfoData_t* _class = nullptr;
-        Entity->dump_class_info(&_class);
-        if (!_class)
+        C_CSPlayerPawn* pawn = reinterpret_cast<C_CSPlayerPawn*>(entity);
+
+        if (pawn == localPlayer ||
+            pawn->m_iHealth() <= 0 ||
+            pawn->m_iTeamNum() == localPlayer->m_iTeamNum())
             continue;
 
-        const uint32_t hash = HASH(_class->szName);
+        Vector_t enemyEyePos = GetEntityEyePos(pawn);
+        QAngle_t angleToEnemy = CalcAngles(localEyePos, enemyEyePos);
 
-        if (hash == HASH("C_CSPlayerPawn")) {
-            C_CSPlayerPawn* pawn = (C_CSPlayerPawn*)Entity;
+        angleToEnemy = angleToEnemy.Normalize();
 
-            if (pawn->get_entity_by_handle() == lp->get_entity_by_handle())
-                continue;
+        float currentFov = GetFov(*viewAngles, angleToEnemy);
+        if (!std::isfinite(currentFov))
+            continue;
 
-            if (pawn->getHealth() < 1)
-                continue;
-
-            if (!Config::team_check && pawn->getTeam() == lp->getTeam())
-                continue;
-
-            Vector_t eye_pos = GetEntityEyePos(pawn);
-            QAngle_t angle = CalcAngles(eye_pos, lep);
-
-            angle.x *= -1.f;
-            angle.y += 180.f;
-
-            const float fov = GetFov(*viewangles, angle);
-            if (!std::isfinite(fov) || fov > Config::aimbot_fov)
-                continue;
-
-            QAngle_t ang_punch_angle = *(QAngle_t*)((uintptr_t)lp + SchemaFinder::Get(hash_32_fnv1a_const("C_CSPlayerPawn->m_aimPunchAngle")));
-
-            if (Config::rcs)
-                angle -= ang_punch_angle * 2.f;
-
-            angle.z = 0.f;
-            angle = angle.Normalize();
-            *viewangles = angle;
-            break;
+        if (currentFov < bestFov) {
+            bestFov = currentFov;
+            bestTarget = pawn;
+            bestAngle = angleToEnemy;
         }
+
+    }
+
+    if (bestTarget) {
+
+        if (Config::rcs) {
+            QAngle_t punchAngles = *(QAngle_t*)((uintptr_t)localPlayer + SchemaFinder::Get(hash_32_fnv1a_const("C_CSPlayerPawn->m_aimPunchAngle")));
+            bestAngle -= punchAngles * 2.f;
+        }
+
+        bestAngle.z = 0;
+        *viewAngles = bestAngle.Normalize();
     }
 }

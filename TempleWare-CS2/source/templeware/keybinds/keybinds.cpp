@@ -10,7 +10,8 @@ Keybind::Keybind(bool& v, int k)
     : var(v), key(k), isListening(false), skipFrame(false) {}
 
 Keybinds::Keybinds() {
-    keybinds.emplace_back(Keybind(Config::aimbot, VK_XBUTTON1));
+    keybinds.emplace_back(Keybind(Config::aimbot, 0x43));
+    keybinds.emplace_back(Keybind(Config::triggerBot, 'N'));
 }
 
 void Keybinds::pollInputs() {

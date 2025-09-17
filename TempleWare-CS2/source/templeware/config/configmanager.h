@@ -72,16 +72,28 @@ namespace internal_config
         static void Save(const std::string& configName)
         {
             nlohmann::json j;
+            // aimbot
+            j["aimbot"] = Config::aimbot;
+            j["aimbot_fov"] = Config::aimbot_fov;
+            j["fov_circle"] = Config::fov_circle;
+            j["rcs"] = Config::rcs;
+            j["Trigger"] = Config::triggerBot;
+            j["fovCircleColor"] = {
+                Config::fovCircleColor.x,
+                Config::fovCircleColor.y,
+                Config::fovCircleColor.z,
+                Config::fovCircleColor.w
+            };
+
+
+            // esp
             j["esp"] = Config::esp;
             j["showHealth"] = Config::showHealth;
             j["teamCheck"] = Config::teamCheck;
             j["espFill"] = Config::espFill;
             j["espThickness"] = Config::espThickness;
             j["espFillOpacity"] = Config::espFillOpacity;
-
-            j["fovEnabled"] = Config::fovEnabled;
-            j["fov"] = Config::fov;
-
+            j["showNameTags"] = Config::showNameTags;
             j["espColor"] = {
                 Config::espColor.x,
                 Config::espColor.y,
@@ -89,42 +101,15 @@ namespace internal_config
                 Config::espColor.w
             };
 
-            j["Night"] = Config::Night;
-            j["NightColor"] = {
-                Config::NightColor.x,
-                Config::NightColor.y,
-                Config::NightColor.z,
-                Config::NightColor.w
-            };
 
-            j["armChams"] = Config::armChams;
-            j["viewmodelChams"] = Config::viewmodelChams;
-
-            j["armChams_color"] = {
-                Config::colArmChams.x,
-                Config::colArmChams.y,
-                Config::colArmChams.z,
-                Config::colArmChams.w
-            };
-
-            j["viewmodelChams_color"] = {
-                Config::colViewmodelChams.x,
-                Config::colViewmodelChams.y,
-                Config::colViewmodelChams.z,
-                Config::colViewmodelChams.w
-            };
-
-            j["aimbot"] = Config::aimbot;
-            j["aimbot_fov"] = Config::aimbot_fov;
-            j["antiflash"] = Config::antiflash;
-            j["rcs"] = Config::rcs;
-            j["fov_circle"] = Config::fov_circle;
-
-            j["enemyChamsInvisible"] = Config::enemyChamsInvisible;
-            j["enemyChams"] = Config::enemyChams;
-            j["teamChams"] = Config::teamChams;
-            j["teamChamsInvisible"] = Config::teamChamsInvisible;
+            // chams
             j["chamsMaterial"] = Config::chamsMaterial;
+            j["enemyChams"] = Config::enemyChams;
+            j["enemyChamsInvisible"] = Config::enemyChamsInvisible;
+            j["viewmodelChams"] = Config::viewmodelChams;
+            j["armChams"] = Config::armChams;
+            j["teamChams"] = Config::teamChams; // not used :/
+            j["teamChamsInvisible"] = Config::teamChamsInvisible; // it to
             j["colVisualChams"] = {
                 Config::colVisualChams.x,
                 Config::colVisualChams.y,
@@ -137,11 +122,17 @@ namespace internal_config
                 Config::colVisualChamsIgnoreZ.z,
                 Config::colVisualChamsIgnoreZ.w
             };
-            j["teamcolVisualChamsIgnoreZ"] = {
-                Config::teamcolVisualChamsIgnoreZ.x,
-                Config::teamcolVisualChamsIgnoreZ.y,
-                Config::teamcolVisualChamsIgnoreZ.z,
-                Config::teamcolVisualChamsIgnoreZ.w
+            j["viewmodelChams_color"] = {
+                Config::colViewmodelChams.x,
+                Config::colViewmodelChams.y,
+                Config::colViewmodelChams.z,
+                Config::colViewmodelChams.w
+            };
+            j["armChams_color"] = {
+                Config::colArmChams.x,
+                Config::colArmChams.y,
+                Config::colArmChams.z,
+                Config::colArmChams.w
             };
             j["teamcolVisualChams"] = {
                 Config::teamcolVisualChams.x,
@@ -149,12 +140,51 @@ namespace internal_config
                 Config::teamcolVisualChams.z,
                 Config::teamcolVisualChams.w
             };
-            j["fovCircleColor"] = {
-                Config::fovCircleColor.x,
-                Config::fovCircleColor.y,
-                Config::fovCircleColor.z,
-                Config::fovCircleColor.w
+            j["teamcolVisualChamsIgnoreZ"] = {
+                Config::teamcolVisualChamsIgnoreZ.x,
+                Config::teamcolVisualChamsIgnoreZ.y,
+                Config::teamcolVisualChamsIgnoreZ.z,
+                Config::teamcolVisualChamsIgnoreZ.w
             };
+
+
+            // removals
+            j["antiflash"] = Config::antiflash;
+            j["fovEnabled"] = Config::fovEnabled;
+            j["fov"] = Config::fov;
+            j["SmokeRemove"] = Config::SmokeRemove;
+            j["ScopeRemove"] = Config::ScopeRemove;
+            j["LegsRemove"] = Config::removelegs;
+
+
+            // misc
+            j["SkyBox"] = Config::skybox;
+            j["SkyBoxColor"] = {
+                Config::skyboxcolor.x,
+                Config::skyboxcolor.y,
+                Config::skyboxcolor.z,
+                Config::skyboxcolor.w
+            };
+            j["Fog"] = Config::fog;
+            j["Night"] = Config::Night;
+            j["NightColor"] = {
+                Config::NightColor.x,
+                Config::NightColor.y,
+                Config::NightColor.z,
+                Config::NightColor.w
+            };
+            j["Light"] = Config::light;
+            j["LightColor"] = {
+                Config::DrawLight.x,
+                Config::DrawLight.y,
+                Config::DrawLight.z,
+                Config::DrawLight.w
+            };
+            j["Viewmodel"] = Config::viewmodell;
+            j["Viewx"] = Config::viewx;
+            j["Viewy"] = Config::viewy;
+            j["Viewz"] = Config::viewz;
+            j["Ifov"] = Config::ifov;
 
             auto filePath = GetConfigPath(configName);
             std::ofstream ofs(filePath);
@@ -178,16 +208,29 @@ namespace internal_config
             nlohmann::json j;
             ifs >> j;
 
+            // aimbot
+            Config::aimbot = j.value("aimbot", false);
+            Config::fov_circle = j.value("fov_circle", false);
+            Config::aimbot_fov = j.value("aimbot_fov", 0.f);
+            Config::rcs = j.value("rcs", false);
+            Config::triggerBot = j.value("Trigger", false);
+            if (j.contains("fovCircleColor") && j["fovCircleColor"].is_array() && j["fovCircleColor"].size() == 4) {
+                auto arr = j["fovCircleColor"];
+                Config::fovCircleColor.x = arr[0].get<float>();
+                Config::fovCircleColor.y = arr[1].get<float>();
+                Config::fovCircleColor.z = arr[2].get<float>();
+                Config::fovCircleColor.w = arr[3].get<float>();
+            }
+
+
+            // esp
             Config::esp = j.value("esp", false);
-            Config::showHealth = j.value("showHealth", false);
-            Config::teamCheck = j.value("teamCheck", false);
             Config::espFill = j.value("espFill", false);
-            Config::espThickness = j.value("espThickness", 1.0f);
             Config::espFillOpacity = j.value("espFillOpacity", 0.5f);
-
-            Config::fovEnabled = j.value("fovEnabled", false);
-            Config::fov = j.value("fov", 90.0f);
-
+            Config::espThickness = j.value("espThickness", 1.0f);
+            Config::teamCheck = j.value("teamCheck", false);
+            Config::showHealth = j.value("showHealth", false);
+            Config::showNameTags = j.value("showNameTags", false);
             if (j.contains("espColor") && j["espColor"].is_array() && j["espColor"].size() == 4)
             {
                 auto arr = j["espColor"];
@@ -197,44 +240,28 @@ namespace internal_config
                 Config::espColor.w = arr[3].get<float>();
             }
 
-            Config::Night = j.value("Night", false);
-            if (j.contains("NightColor") && j["NightColor"].is_array() && j["NightColor"].size() == 4)
-            {
-                auto arr = j["NightColor"];
-                Config::NightColor.x = arr[0].get<float>();
-                Config::NightColor.y = arr[1].get<float>();
-                Config::NightColor.z = arr[2].get<float>();
-                Config::NightColor.w = arr[3].get<float>();
-            }
 
+            // chams
             Config::enemyChamsInvisible = j.value("enemyChamsInvisible", false);
             Config::enemyChams = j.value("enemyChams", false);
             Config::teamChams = j.value("teamChams", false);
             Config::teamChamsInvisible = j.value("teamChamsInvisible", false);
             Config::chamsMaterial = j.value("chamsMaterial", 0);
-
-            Config::fov_circle = j.value("fov_circle", false);
-            Config::aimbot = j.value("aimbot", false);
-            Config::rcs = j.value("rcs", false);
-            Config::aimbot_fov = j.value("aimbot_fov", 0.f);
-
-            Config::antiflash = j.value("antiflash", false);
-
             Config::armChams = j.value("armChams", false);
             Config::viewmodelChams = j.value("viewmodelChams", false);
 
-            if (j.contains("colArmChams") && j["colArmChams"].is_array() && j["colArmChams"].size() == 4)
+            if (j.contains("armChams_color") && j["armChams_color"].is_array() && j["armChams_color"].size() == 4)
             {
-                auto arr = j["colArmChams"];
+                auto arr = j["armChams_color"];
                 Config::colArmChams.x = arr[0].get<float>();
                 Config::colArmChams.y = arr[1].get<float>();
                 Config::colArmChams.z = arr[2].get<float>();
                 Config::colArmChams.w = arr[3].get<float>();
             }
 
-            if (j.contains("colViewmodelChams") && j["colViewmodelChams"].is_array() && j["colViewmodelChams"].size() == 4)
+            if (j.contains("viewmodelChams_color") && j["viewmodelChams_color"].is_array() && j["viewmodelChams_color"].size() == 4)
             {
-                auto arr = j["colViewmodelChams"];
+                auto arr = j["viewmodelChams_color"];
                 Config::colViewmodelChams.x = arr[0].get<float>();
                 Config::colViewmodelChams.y = arr[1].get<float>();
                 Config::colViewmodelChams.z = arr[2].get<float>();
@@ -277,13 +304,49 @@ namespace internal_config
                 Config::teamcolVisualChams.w = arr[3].get<float>();
             }
 
-            if (j.contains("fovCircleColor") && j["fovCircleColor"].is_array() && j["fovCircleColor"].size() == 4) {
-                auto arr = j["fovCircleColor"];
-                Config::fovCircleColor.x = arr[0].get<float>();
-                Config::fovCircleColor.y = arr[1].get<float>();
-                Config::fovCircleColor.z = arr[2].get<float>();
-                Config::fovCircleColor.w = arr[3].get<float>();
+            // removals
+            Config::antiflash = j.value("antiflash", false);
+            Config::SmokeRemove = j.value("SmokeRemove", false);
+            Config::ScopeRemove = j.value("ScopeRemove", false);
+            Config::removelegs = j.value("LegsRemove", false);
+
+
+            // misc
+            Config::skybox = j.value("SkyBox", false);
+            if (j.contains("SkyBoxColor") && j["SkyBoxColor"].is_array() && j["SkyBoxColor"].size() == 4)
+            {
+                auto arr = j["SkyBoxColor"];
+                Config::skyboxcolor.x = arr[0].get<float>();
+                Config::skyboxcolor.y = arr[1].get<float>();
+                Config::skyboxcolor.z = arr[2].get<float>();
+                Config::skyboxcolor.w = arr[3].get<float>();
             }
+            Config::fog = j.value("Fog", false);
+            Config::Night = j.value("Night", false);
+            if (j.contains("NightColor") && j["NightColor"].is_array() && j["NightColor"].size() == 4)
+            {
+                auto arr = j["NightColor"];
+                Config::NightColor.x = arr[0].get<float>();
+                Config::NightColor.y = arr[1].get<float>();
+                Config::NightColor.z = arr[2].get<float>();
+                Config::NightColor.w = arr[3].get<float>();
+            }
+            Config::fovEnabled = j.value("fovEnabled", false);
+            Config::fov = j.value("fov", 90.0f);
+            Config::light = j.value("Light", false);
+            if (j.contains("LightColor") && j["LightColor"].is_array() && j["LightColor"].size() == 4)
+            {
+                auto arr = j["LightColor"];
+                Config::DrawLight.x = arr[0].get<float>();
+                Config::DrawLight.y = arr[1].get<float>();
+                Config::DrawLight.z = arr[2].get<float>();
+                Config::DrawLight.w = arr[3].get<float>();
+            }
+            Config::viewmodell = j.value("Viewmodel", false);
+            Config::viewx = j.value("Viewx", 0.0f);
+            Config::viewy = j.value("Viewy", 0.0f);
+            Config::viewz = j.value("Viewz", 0.0f);
+            Config::ifov = j.value("Ifov", 100.0f);
 
             ifs.close();
         }

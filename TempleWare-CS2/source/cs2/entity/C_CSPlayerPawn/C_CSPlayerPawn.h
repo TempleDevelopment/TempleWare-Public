@@ -9,20 +9,24 @@
 
 class C_CSPlayerPawn : public C_BaseEntity {
 public:
-	SCHEMA_ADD_OFFSET(Vector_t, m_vOldOrigin, 0x1324);
-	SCHEMA_ADD_OFFSET(Vector_t, m_vecViewOffset, 0xCB0);
-	SCHEMA_ADD_OFFSET(CCSPlayer_WeaponServices*, m_pWeaponServices, 0x11A8);
+	SCHEMA_ADD_OFFSET(Vector_t, m_vOldOrigin, 0x15B0);
+	SCHEMA_ADD_OFFSET(Vector_t, m_vecViewOffset, 0xD98);
+	SCHEMA_ADD_OFFSET(CCSPlayer_WeaponServices*, m_pWeaponServices, 0x1400);
 	C_CSPlayerPawn(uintptr_t address);
 
-	C_CSWeaponBase* GetActiveWeapon()const;
-	CCSPlayer_WeaponServices* GetWeaponServices()const;
+	C_CSWeaponBase* GetActiveWeapon() const;
+	CCSPlayer_WeaponServices* GetWeaponServices() const;
 	Vector_t getPosition() const;
 	Vector_t getEyePosition() const;
-
-	uintptr_t getAddress() const;
-	int getHealth() const;
-	uint8_t getTeam() const;
 	Vector_t getViewOffset() const;
+
+	int getIDEntIndex() const;
+	int getMoveType() const;
+	uintptr_t getAddress() const;
+	int32_t getHealth() const;
+	uint32_t getFlags() const;
+	uint8_t getTeam() const;
+	bool getInScoped() const;
 private:
 	uintptr_t address;
 };

@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string_view>
+
 namespace I {
     using InstantiateInterfaceFn = void* (*)();
     class CInterfaceReg

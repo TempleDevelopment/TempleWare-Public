@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include "../../hooks/hooks.h"
-#include "../../players/players.h"
+// #include "../../players/players.h"
 #include "../../utils/memory/patternscan/patternscan.h"
 #include "../../utils/memory/gaa/gaa.h"
 #include "../../../../external/imgui/imgui.h"
@@ -124,8 +124,25 @@ void Esp::cache()
                     continue;
 
                 health = Player->m_iHealth();
-                name = Controller->m_sSanitizedPlayerName();
+                name = Controller->getName();
                 position = Player->m_vOldOrigin(); viewOffset = Player->m_vecViewOffset();
+                /*
+                C_CSWeaponBase* active_weapon = Player->GetActiveWeapon();
+                if (active_weapon) {
+                    auto* weapon_data = active_weapon->Data();
+                    if (weapon_data) {
+                        const char* m_name = weapon_data->m_szName();
+                        if (const char* weapon_prefix = strstr(m_name, "weapon_")) {
+                            weapon_name.assign(weapon_prefix + strlen("weapon_"));
+                        }
+                        else {
+                            weapon_name.assign(m_name);
+                        }
+                        std::transform(weapon_name.begin(), weapon_name.end(), weapon_name.begin(), ::toupper);
+                    }
+                }
+                */
+                
 
                 cached_players.emplace_back(Entity, Player, Player->handle(),
                     type, health, name,
@@ -152,7 +169,6 @@ void Visuals::esp() {
 
     for (const auto& Player : cached_players)
     {
-
         if (!Player.handle.valid() || Player.health <= 0 || Player.handle.index() == INVALID_EHANDLE_INDEX)
             continue;
 
@@ -176,12 +192,12 @@ void Visuals::esp() {
 
         float boxY = headScreen.y - (boxHeight - (feetScreen.y - headScreen.y)) / 2.0f;
 
+        ImGuiIO& io = ImGui::GetIO();
         ImVec4 espColorWithAlpha = Config::espColor;
         espColorWithAlpha.w = Config::espFillOpacity;
         ImU32 boxColor = ImGui::ColorConvertFloat4ToU32(Config::espColor);
         ImU32 fillColor = ImGui::ColorConvertFloat4ToU32(espColorWithAlpha);
 
-        // ESP Fill
         if (Config::espFill) {
             drawList->AddRectFilled(
                 ImVec2(boxX, boxY),
@@ -190,7 +206,6 @@ void Visuals::esp() {
             );
         }
 
-        // ESP Box - only render if Config::esp is enabled
         if (Config::esp) {
             drawList->AddRect(
                 ImVec2(boxX, boxY),
@@ -202,7 +217,6 @@ void Visuals::esp() {
             );
         }
 
-        // Health Bar
         if (Config::showHealth) {
             int health = Player.health;
             float healthHeight = boxHeight * (static_cast<float>(health) / 100.0f);
@@ -245,23 +259,22 @@ void Visuals::esp() {
         }
 
         if (Config::showNameTags) {
-            std::string playerName = Player.name;
-            ImVec2 nameSize = ImGui::CalcTextSize(playerName.c_str());
+            const char* playerNameUtf8 = Player.name;
+            ImVec2 nameSize = ImGui::CalcTextSize(playerNameUtf8);
 
             float nameX = boxX + (boxWidth - nameSize.x) / 2;
             float nameY = boxY - nameSize.y - 2;
 
-            //@FIXME: shit method to do outline
             drawList->AddText(
                 ImVec2(nameX + 1, nameY + 1),
                 IM_COL32(0, 0, 0, 255),
-                playerName.c_str()
+                playerNameUtf8
             );
 
             drawList->AddText(
                 ImVec2(nameX, nameY),
                 IM_COL32(255, 255, 255, 255),
-                playerName.c_str()
+                playerNameUtf8
             );
         }
     }

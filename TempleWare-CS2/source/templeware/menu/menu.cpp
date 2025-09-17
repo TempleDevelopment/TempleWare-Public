@@ -9,6 +9,10 @@
 
 #include "../utils/logging/log.h"
 
+#include "../interfaces/interfaces.h"
+
+#include "../hooks/hooks.h"
+
 void ApplyImGuiTheme() {
     ImGui::StyleColorsDark();
 
@@ -75,21 +79,27 @@ void ApplyImGuiTheme() {
     style.GrabMinSize = 7.0f;
 }
 
+Menu* Menu::instance = nullptr;
+
 Menu::Menu() {
+    instance = this;
     activeTab = 0;
     showMenu = true;
+    stack = false;
 }
+
 
 void Menu::init(HWND& window, ID3D11Device* pDevice, ID3D11DeviceContext* pContext, ID3D11RenderTargetView* mainRenderTargetView) {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags = ImGuiConfigFlags_NoMouseCursorChange;
+
     ImGui_ImplWin32_Init(window);
     ImGui_ImplDX11_Init(pDevice, pContext);
 
     ApplyImGuiTheme();
 
-    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 16.0f);
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 16.0f, NULL, io.Fonts->GetGlyphRangesCyrillic());
 
     std::cout << "initialized menu\n";
 }
@@ -103,16 +113,16 @@ void Menu::render() {
         ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_Once);
         ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_Once);
 
-        ImGui::Begin("TempleWare | Internal", nullptr, window_flags);
+        ImGui::Begin("Internal", nullptr, window_flags);
 
         {
             float windowWidth = ImGui::GetWindowWidth();
-            float rightTextWidth = ImGui::CalcTextSize("templecheats.xyz").x;
+            float rightTextWidth = ImGui::CalcTextSize("Templeware").x;
 
-            ImGui::Text("TempleWare - Internal");
+            ImGui::Text("Internal");
 
             ImGui::SameLine(windowWidth - rightTextWidth - 10);
-            ImGui::Text("templecheats.xyz");
+            ImGui::Text("Templeware");
         }
 
         ImGui::Separator();
@@ -138,26 +148,37 @@ void Menu::render() {
             ImGui::Text("General");
             ImGui::Separator();
 
-            ImGui::Checkbox("Enable##AimBot", &Config::aimbot);
+            ImGui::Checkbox("Enable##navodka", &Config::aimbot);
             ImGui::SameLine();
             ImGui::Text("Key:");
             ImGui::SameLine();
             keybind.menuButton(Config::aimbot);
 
-            ImGui::Checkbox("Team Check", &Config::team_check);
+            if (Config::aimbot) {
+                ImGui::Checkbox("offset aim", &Config::offsetaim);
+            }
+
             ImGui::SliderFloat("FOV", &Config::aimbot_fov, 0.f, 90.f);
             ImGui::Checkbox("Draw FOV Circle", &Config::fov_circle);
             if (Config::fov_circle) {
                 ImGui::ColorEdit4("Circle Color##FovColor", (float*)&Config::fovCircleColor);
             }
             ImGui::Checkbox("Recoil Control", &Config::rcs);
+
+
             ImGui::EndChild();
 
             ImGui::SameLine();
             ImGui::BeginChild("AimRight", ImVec2(0, 0), true);
             ImGui::Text("TriggerBot");
             ImGui::Separator();
-            ImGui::Text("No additional settings");
+            // ImGui::Text("No additional settings");
+
+            ImGui::Checkbox("Trigger", &Config::triggerBot);
+            ImGui::SameLine();
+            ImGui::Text("Key:");
+            ImGui::SameLine();
+            keybind.menuButton(Config::triggerBot);
 
             ImGui::EndChild();
         }
@@ -184,14 +205,34 @@ void Menu::render() {
             ImGui::Text("World");
             ImGui::Separator();
 
+            ImGui::Checkbox("SkyBox", &Config::skybox);
+            if (Config::skybox) {
+                ImGui::ColorEdit4("SkyBox Color", (float*)&Config::skyboxcolor);
+            }
+            
+            ImGui::Checkbox("Fog rendering", &Config::fog);
+
             ImGui::Checkbox("Night Mode", &Config::Night);
             if (Config::Night) {
                 ImGui::ColorEdit4("Night Color", (float*)&Config::NightColor);
             }
 
+            ImGui::Checkbox("Lighting", &Config::light);
+            if (Config::light) {
+                ImGui::ColorEdit4("Lighting Color", (float*)&Config::DrawLight);
+            }
+
             ImGui::Checkbox("Custom FOV", &Config::fovEnabled);
             if (Config::fovEnabled) {
                 ImGui::SliderFloat("FOV Value##FovSlider", &Config::fov, 20.0f, 160.0f, "%1.0f");
+            }
+
+            ImGui::Checkbox("View model", &Config::viewmodell);
+            if (Config::viewmodell) {
+                ImGui::SliderFloat("X", &Config::viewx, -20.f, 20.f);
+                ImGui::SliderFloat("Y", &Config::viewy, -20.f, 20.f);
+                ImGui::SliderFloat("Z", &Config::viewz, -20.f, 20.f);
+                ImGui::SliderFloat("Fov view model", &Config::ifov, 60.f, 150.f);
             }
 
             ImGui::EndChild();
@@ -201,13 +242,13 @@ void Menu::render() {
             ImGui::Text("Chams");
             ImGui::Separator();
 
-            ImGui::Checkbox("Chams##ChamsCheckbox", &Config::enemyChams);
             const char* chamsMaterials[] = { "Flat", "Illuminate", "Glow" };
             ImGui::Combo("Material", &Config::chamsMaterial, chamsMaterials, IM_ARRAYSIZE(chamsMaterials));
+            ImGui::Checkbox("Visible##ChamsCheckbox", &Config::enemyChams);
             if (Config::enemyChams) {
                 ImGui::ColorEdit4("Chams Color##ChamsColor", (float*)&Config::colVisualChams);
             }
-            ImGui::Checkbox("Chams-XQZ", &Config::enemyChamsInvisible);
+            ImGui::Checkbox("Invisible", &Config::enemyChamsInvisible);
             if (Config::enemyChamsInvisible) {
                 ImGui::ColorEdit4("XQZ Color##ChamsXQZColor", (float*)&Config::colVisualChamsIgnoreZ);
             }
@@ -223,14 +264,16 @@ void Menu::render() {
             ImGui::Checkbox("Viewmodel Chams", &Config::viewmodelChams);
             if (Config::viewmodelChams) {
                 ImGui::ColorEdit4("Viewmodel Color##ViewModelChamsColor", (float*)&Config::colViewmodelChams);
+                ImGui::Checkbox("Rainbow", &Config::rainbow);
             }
 
             ImGui::Spacing();
             ImGui::Text("Removals");
             ImGui::Separator();
-
             ImGui::Checkbox("Anti Flash", &Config::antiflash);
-
+            ImGui::Checkbox("Remove Smoke", &Config::SmokeRemove);
+            ImGui::Checkbox("Remove Scope", &Config::ScopeRemove);
+            ImGui::Checkbox("Remove Legs", &Config::removelegs);
             ImGui::EndChild();
         }
         break;
@@ -240,7 +283,6 @@ void Menu::render() {
             ImGui::BeginChild("MiscLeft", ImVec2(ImGui::GetContentRegionAvail().x * 0.5f - 5, 0), true);
             ImGui::Text("Movement");
             ImGui::Separator();
-
             ImGui::Text("No additional settings");
 
             ImGui::EndChild();
@@ -248,9 +290,15 @@ void Menu::render() {
             ImGui::SameLine();
             ImGui::BeginChild("MiscRight", ImVec2(0, 0), true);
             ImGui::Text("Other");
+
+            ImGui::Checkbox("Enable Spammer", &Config::spammer);
+
+            const char* spamOptions[] = { "SharkHack", "AimWare", "Luno" };
+            ImGui::Combo("Spammer Type", &Config::spammingcho, spamOptions, IM_ARRAYSIZE(spamOptions));
+
             ImGui::Separator();
 
-            ImGui::Text("No additional settings");
+            // ImGui::Text("No additional settings");
 
             ImGui::EndChild();
         }
@@ -310,6 +358,21 @@ void Menu::render() {
     }
 }
 
+
+void* __fastcall H::hkIsRelativeMouseMode(void* pThisptr, bool bActive) {
+    auto res = IsRelativeMouseMode.GetOriginal();
+    Menu::sdk = bActive;
+    return res(pThisptr, Menu::IsMenuOpen() ? false : bActive);
+}
+
+bool __fastcall H::hkMouseInputEnabled(void* rcx) {
+    auto res = MouseInputEnabled.GetOriginal();
+    return Menu::ShouldBlockMouseInput() ? false : res(rcx);
+}
+
+
 void Menu::toggleMenu() {
     showMenu = !showMenu;
+    auto repet = H::IsRelativeMouseMode.GetOriginal();
+    repet(I::InputSys, Menu::IsMenuOpen() ? false : Menu::sdk);
 }

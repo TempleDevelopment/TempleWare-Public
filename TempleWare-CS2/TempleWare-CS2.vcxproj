@@ -173,12 +173,16 @@
     <ClCompile Include="source\templeware\features\chams\chams.cpp" />
     <ClCompile Include="source\templeware\features\visuals\antiflash\antiflash.cpp" />
     <ClCompile Include="source\templeware\features\visuals\fov\fov.cpp" />
+    <ClCompile Include="source\templeware\features\visuals\scenelight\scenelight.cpp" />
+    <ClCompile Include="source\templeware\features\visuals\SmokeRemove\SmokeRemove.cpp" />
+    <ClCompile Include="source\templeware\features\visuals\viewmodel\viewmodel.cpp" />
     <ClCompile Include="source\templeware\interfaces\CGameEntitySystem\CGameEntitySystem.cpp" />
     <ClCompile Include="source\templeware\interfaces\interfaces.cpp" />
     <ClCompile Include="source\debug\debug.cpp" />
     <ClCompile Include="source\templeware\config\config.cpp" />
     <ClCompile Include="source\templeware\features\world\world.cpp" />
     <ClCompile Include="source\templeware\hooks\hooks.cpp" />
+    <ClCompile Include="source\templeware\interfaces\Source2\inputsystem.cpp" />
     <ClCompile Include="source\templeware\keybinds\keybinds.cpp" />
     <ClCompile Include="source\templeware\menu\hud.cpp" />
     <ClCompile Include="source\templeware\utils\logging\log.cpp" />
@@ -188,8 +192,6 @@
     <ClCompile Include="source\templeware\utils\memory\gaa\gaa.cpp" />
     <ClCompile Include="source\templeware\utils\memory\patternscan\patternscan.cpp" />
     <ClCompile Include="source\templeware\utils\module\module.cpp" />
-    <ClCompile Include="source\templeware\players\hook\playerHook.cpp" />
-    <ClCompile Include="source\templeware\players\players.cpp" />
     <ClCompile Include="source\templeware\templeware.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\templeware\menu\menu.cpp" />
@@ -223,6 +225,8 @@
     <ClInclude Include="source\cs2\entity\C_CSPlayerPawn\C_CSPlayerPawn.h" />
     <ClInclude Include="source\cs2\entity\C_CSWeaponBase\C_CSWeaponBase.h" />
     <ClInclude Include="source\cs2\entity\C_EntityInstance\C_EntityInstance.h" />
+    <ClInclude Include="source\templeware\utils\C_Color\Color.h" />
+    <ClInclude Include="source\cs2\entity\C_Env_Sky\c_env_sky.h" />
     <ClInclude Include="source\cs2\entity\C_Material\C_Material.h" />
     <ClInclude Include="source\cs2\entity\handle.h" />
     <ClInclude Include="source\templeware\features\aim\aim.h" />
@@ -235,9 +239,9 @@
     <ClInclude Include="source\templeware\config\configmanager.h" />
     <ClInclude Include="source\templeware\hooks\hooks.h" />
     <ClInclude Include="source\templeware\hooks\includeHooks.h" />
+    <ClInclude Include="source\templeware\interfaces\Source2\inputsystem.h" />
     <ClInclude Include="source\templeware\keybinds\keybinds.h" />
     <ClInclude Include="source\templeware\menu\hud.h" />
-    <ClInclude Include="source\templeware\offsets\offsets.h" />
     <ClInclude Include="source\templeware\renderer\icons.h" />
     <ClInclude Include="source\templeware\utils\fnv1a\fnv1a.h" />
     <ClInclude Include="source\templeware\utils\logging\log.h" />
@@ -254,8 +258,6 @@
     <ClInclude Include="source\templeware\utils\memory\patternscan\patternscan.h" />
     <ClInclude Include="source\templeware\utils\memory\vfunc\vfunc.h" />
     <ClInclude Include="source\templeware\utils\module\module.h" />
-    <ClInclude Include="source\templeware\players\hook\playerHook.h" />
-    <ClInclude Include="source\templeware\players\players.h" />
     <ClInclude Include="source\templeware\renderer\renderer.h" />
     <ClInclude Include="source\templeware\templeware.h" />
     <ClInclude Include="source\features\visuals\visuals.h" />

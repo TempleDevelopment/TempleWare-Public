@@ -16,8 +16,25 @@ namespace Config {
 	extern ImVec4 espColor;
 	extern bool showNameTags;
 
+	extern bool viewmodell;
+	extern float viewx, viewy, viewz;
+	extern float ifov;
+
+	extern bool light;
+	extern ImVec4 DrawLight;
+
+	extern bool fog;
+
+	extern bool skybox;
+	extern ImVec4 skyboxcolor;
+
+	extern bool spammer;
+	extern int spammingcho;
+
 	extern bool Night;
 	extern ImVec4 NightColor;
+
+	extern bool rainbow;
 
 	extern bool enemyChamsInvisible;
 	extern bool enemyChams;
@@ -39,13 +56,17 @@ namespace Config {
 	extern float fov;
 
 	extern bool antiflash;
+	extern bool SmokeRemove;
+	extern bool ScopeRemove;
 
 	extern bool Night;
 
 	extern bool aimbot;
+	extern bool offsetaim;
 	extern float aimbot_fov;
-	extern bool team_check;
 	extern bool rcs;
 	extern bool fov_circle;
 	extern ImVec4 fovCircleColor;
+	extern bool triggerBot;
+	extern bool removelegs;
 }

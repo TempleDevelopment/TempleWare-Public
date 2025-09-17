@@ -27,6 +27,9 @@ void TempleWare::init(HWND& window, ID3D11Device* pDevice, ID3D11DeviceContext* 
     printWithPrefix("Initializing Interfaces...");
     interfaces.init();
 
+    printWithPrefix("Initializing fonts...");
+    renderer.hud.InitializeFonts();
+
     printWithPrefix("Initializing visuals...");
     renderer.visuals.init();
 

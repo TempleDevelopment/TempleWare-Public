@@ -46,7 +46,7 @@ public:
 
 	void dump_class_info(SchemaClassInfoData_t** pReturn)
 	{
-		return M::vfunc<void, 38U>(this, pReturn);
+		return M::vfunc<void, 42U>(this, pReturn);
 	}
 
 

@@ -24,6 +24,7 @@ class CCSWeaponBaseVData
 {
 public:
 	SCHEMA_ADD_OFFSET(const char*, m_szName, 0xD20);
+	SCHEMA_ADD_OFFSET(int32_t, GetWeaponType, 0x348);
 };
 
 class C_CSWeaponBase 
