@@ -15,7 +15,7 @@ namespace H {
 	// void* __fastcall hkUpdateSceneObject(C_AggregateSceneObject* object, void* unk);
 	void __fastcall hkFrameStageNotify(void* a1, int stage);
 	void* __fastcall hkLevelInit(void* pClientModeShared, const char* szNewMap);
-	void __fastcall hkChamsObject(void* pAnimatableSceneObjectDesc, void* pDx11, CMeshData* arrMeshDraw, int nDataCount, void* pSceneView, void* pSceneLayer, void* pUnk, void* pUnk2);
+	void __fastcall hkChamsObject(void* pAnimatableSceneObjectDesc, void* pDx11, CMeshData* arrMeshDraw, int nDataCount, void* pSceneView, void* pSceneLayer, void* pUnk);
 	void __fastcall hkRenderFlashbangOverlay(void* a1, void* a2, void* a3, void* a4, void* a5);
 	void* __fastcall hkDrawSmokeArray(void* rcx, void* pSomePointer1, void* pSomePointer2, void* pSomePointer3, void* pSomePointer4, void* pSomePointer5);
 	void __fastcall hkDrawScopeOverlay(void* a1, void* a2);
