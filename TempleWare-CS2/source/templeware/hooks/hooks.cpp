@@ -106,14 +106,14 @@ void H::Hooks::init() {
     
     // UpdateWallsObject.Add((void*)M::patternScan("scenesystem", ("48 89 5C 24 10 48 89 6C 24 18 56 57 41 54 41 56 41 57 48 83 EC 40")), &hkUpdateSceneObject);
     FrameStageNotify.Add((void*)M::patternScan("client", ("48 89 5c 24 ? 57 48 83 ec ? 39 15")), &hkFrameStageNotify); 
-    DrawArray.Add((void*)M::patternScan("scenesystem", ("48 8B C4 48 89 50 10 53 41 55 41 57 48 81 EC F0 00")), &chams::hook);
+    DrawArray.Add((void*)M::patternScan("scenesystem", ("48 8B C4 53 57 41 54 48 81 EC D0 00 00 00 49 63 F9 49")), &chams::hook);
     GetRenderFov.Add((void*)M::getAbsoluteAddress(M::patternScan("client", "E8 ? ? ? ? F3 0F 11 45 00 48 8B 5C 24 40"), 1), &hkGetRenderFov);
     LevelInit.Add((void*)M::getAbsoluteAddress(M::patternScan("client", "E8 ? ? ? ? C6 83 ? ? ? ? ? C6 83"), 1), &hkLevelInit);
     RenderFlashBangOverlay.Add((void*)M::patternScan("client", ("85 D2 0F 88 ? ? ? ? 55 56 41 55")), &hkRenderFlashbangOverlay);
     DrawSmokeArray.Add((void*)M::patternScan("client", ("48 89 54 24 10 55 41 54 48 8D AC 24 38 F9 FF FF 48 81 EC C8 07 00 00 4C 8B E2")), &hkDrawSmokeArray);
     DrawScopeOverlay.Add((void*)M::patternScan("client", ("48 8B C4 53 57 48 83 EC 68 48 8B FA 44 0F 29 40 B8 48 8B 51 10 48 8B")), &hkDrawScopeOverlay);
     DrawLegs.Add((void*)M::patternScan("client", ("40 55 53 56 41 56 41 57 48 8D AC 24 60 FB FF FF 48 81 EC A0 05 00 00 F2 0F 10")), &hkDrawLegs);
-    DrawViewModel.Add((void*)M::patternScan("client", ("48 89 5C 24 ? 48 89 74 24 ? 55 57 41 54 41 56 41 57 48 8B EC 48 83 EC ? 4D 8B E0")), &hkDrawViewModel);
+    DrawViewModel.Add((void*)M::patternScan("client", ("40 55 53 56 41 56 41 57 48 8B EC 48 83 EC 20 4D 8B F8 4C 8B F2 48 8B")), &hkDrawViewModel);
     LightingModulate.Add((void*)M::patternScan("scenesystem", ("48 89 5C 24 18 48 89 6C 24 20 48 89 54 24 10 57 48 83 EC 50 48 8B DA 48 8B F9 BA FF FF FF FF 48")), &hkLightingModulate);
     MouseInputEnabled.Add((void*)M::patternScan("client", ("40 53 48 83 EC 20 80 B9 ? ? ? ? ? 48 8B D9 75 78")), &hkMouseInputEnabled);
     IsRelativeMouseMode.Add((void*)M::getvfunc(I::InputSys, 76U), &hkIsRelativeMouseMode);
