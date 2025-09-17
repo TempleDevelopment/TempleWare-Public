@@ -224,38 +224,38 @@ ChamsEntity chams::GetTargetType(C_BaseEntity* render_ent) noexcept {
 
 CMaterial2* GetMaterial(int type, bool invisible) { return invisible ? resourceMaterials[type].mat_invs : resourceMaterials[type].mat; }
 
-void __fastcall chams::hook(void* a1, void* a2, CMeshData* pMeshScene, int nMeshCount, void* pSceneView, void* pSceneLayer, void* pUnk, void* pUnk2)
+void __fastcall chams::hook(void* a1, void* a2, CMeshData* pMeshScene, int nMeshCount, void* pSceneView, void* pSceneLayer, void* pUnk)
 {
     static auto original = H::DrawArray.GetOriginal();
 
     if (!I::EngineClient->valid())
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
     auto local_player = H::oGetLocalPlayer(0);
     if (!local_player)
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
     if (!pMeshScene)
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
 
     if (!pMeshScene->pSceneAnimatableObject)
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
 
     if (nMeshCount < 1)
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
 
     CMeshData* render_data = pMeshScene;
     if (!render_data)
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
 
     if (!render_data->pSceneAnimatableObject)
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
 
     auto render_ent = render_data->pSceneAnimatableObject->Owner();
     if (!render_ent.valid())
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
 
     auto entity = I::GameEntity->Instance->Get(render_ent);
     if (!entity)
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
 
     const auto target = GetTargetType(entity);
 
@@ -275,7 +275,7 @@ void __fastcall chams::hook(void* a1, void* a2, CMeshData* pMeshScene, int nMesh
         }
 
         pMeshScene->color.a = static_cast<uint8_t>(Config::colViewmodelChams.w * 255.0f);
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
     }
 
     if (target == ChamsEntity::HANDS && Config::armChams) {
@@ -284,15 +284,15 @@ void __fastcall chams::hook(void* a1, void* a2, CMeshData* pMeshScene, int nMesh
         pMeshScene->color.g = static_cast<uint8_t>(Config::colArmChams.y * 255.0f);
         pMeshScene->color.b = static_cast<uint8_t>(Config::colArmChams.z * 255.0f);
         pMeshScene->color.a = static_cast<uint8_t>(Config::colArmChams.w * 255.0f);
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
     }
 
     if (target != ENEMY)
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
 
     bool og = !Config::enemyChams && !Config::enemyChamsInvisible;
     if (og)
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
 
     if (Config::enemyChamsInvisible) {
         pMeshScene->pMaterial = GetMaterial(Config::chamsMaterial, true);
@@ -301,7 +301,7 @@ void __fastcall chams::hook(void* a1, void* a2, CMeshData* pMeshScene, int nMesh
         pMeshScene->color.b = static_cast<uint8_t>(Config::colVisualChamsIgnoreZ.z * 255.0f);
         pMeshScene->color.a = static_cast<uint8_t>(Config::colVisualChamsIgnoreZ.w * 255.0f);
 
-        original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
     }
 
     if (Config::enemyChams) {
@@ -310,9 +310,9 @@ void __fastcall chams::hook(void* a1, void* a2, CMeshData* pMeshScene, int nMesh
         pMeshScene->color.g = static_cast<uint8_t>(Config::colVisualChams.y * 255.0f);
         pMeshScene->color.b = static_cast<uint8_t>(Config::colVisualChams.z * 255.0f);
         pMeshScene->color.a = static_cast<uint8_t>(Config::colVisualChams.w * 255.0f);
-        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+        return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
     }
 
     // If we get here, neither chams type is enabled, so just render normally
-    return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk, pUnk2);
+    return original(a1, a2, pMeshScene, nMeshCount, pSceneView, pSceneLayer, pUnk);
 }
